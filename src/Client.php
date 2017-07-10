@@ -363,6 +363,14 @@ class Client implements ClientInterface
             $value = $options['query'];
             if (is_array($value)) {
                 $value = http_build_query($value, null, '&', PHP_QUERY_RFC3986);
+
+                if (isset($options['query_array_format'])) {
+                    if ($options['query_array_format'] == 1 /* QUERY_ARRAY_NOINDEX */) {
+                        $value = preg_replace('/%5B\d+%5D=/', '%5B%5D=', $value);
+                    } else if ($options['query_array_format'] == 2 /* QUERY_ARRAY_ASSOCIATIVE */) {
+                        $value = preg_replace('/%5B\d+%5D=/', '=', $value);
+                    }
+                }
             }
             if (!is_string($value)) {
                 throw new \InvalidArgumentException('query must be a string or array');
